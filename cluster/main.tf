@@ -1,14 +1,14 @@
 module "networking" {
   source = "./modules/networking"
   vpc_parameters = {
-    dcoppa_vpc = {
+    dcoppa = {
       cidr_block = "10.0.0.0/16"
     }
   }
   subnet_parameters = {
     dcoppa_pub_subnet1 = {
       cidr_block              = "10.0.1.0/24"
-      vpc_name                = "dcoppa_vpc"
+      vpc_name                = "dcoppa"
       availability_zone       = "eu-central-1a"
       map_public_ip_on_launch = true
       tags = {
@@ -17,7 +17,7 @@ module "networking" {
     }
     dcoppa_pub_subnet2 = {
       cidr_block              = "10.0.2.0/24"
-      vpc_name                = "dcoppa_vpc"
+      vpc_name                = "dcoppa"
       availability_zone       = "eu-central-1b"
       map_public_ip_on_launch = true
       tags = {
@@ -26,7 +26,7 @@ module "networking" {
     }
     dcoppa_pub_subnet3 = {
       cidr_block              = "10.0.3.0/24"
-      vpc_name                = "dcoppa_vpc"
+      vpc_name                = "dcoppa"
       availability_zone       = "eu-central-1c"
       map_public_ip_on_launch = true
       tags = {
@@ -35,7 +35,7 @@ module "networking" {
     }
     dcoppa_priv_subnet1 = {
       cidr_block        = "10.0.4.0/24"
-      vpc_name          = "dcoppa_vpc"
+      vpc_name          = "dcoppa"
       availability_zone = "eu-central-1a"
       tags = {
         "nettype" = "priv"
@@ -43,7 +43,7 @@ module "networking" {
     }
     dcoppa_priv_subnet2 = {
       cidr_block        = "10.0.5.0/24"
-      vpc_name          = "dcoppa_vpc"
+      vpc_name          = "dcoppa"
       availability_zone = "eu-central-1b"
       tags = {
         "nettype" = "priv"
@@ -51,7 +51,7 @@ module "networking" {
     }
     dcoppa_priv_subnet3 = {
       cidr_block        = "10.0.6.0/24"
-      vpc_name          = "dcoppa_vpc"
+      vpc_name          = "dcoppa"
       availability_zone = "eu-central-1c"
       tags = {
         "nettype" = "priv"
@@ -60,7 +60,7 @@ module "networking" {
   }
   igw_parameters = {
     dcoppa_igw = {
-      vpc_name = "dcoppa_vpc"
+      vpc_name = "dcoppa"
     }
   }
   ngw_parameters = {
@@ -79,7 +79,7 @@ module "networking" {
   }
   rt_parameters = {
     dcoppa_pub_rt = {
-      vpc_name = "dcoppa_vpc"
+      vpc_name = "dcoppa"
       routes = [{
         cidr_block = "0.0.0.0/0"
         use_igw    = true
@@ -88,7 +88,7 @@ module "networking" {
       ]
     }
     dcoppa_priv_rt_subnet1 = {
-      vpc_name = "dcoppa_vpc"
+      vpc_name = "dcoppa"
       routes = [{
         cidr_block = "0.0.0.0/0"
         use_ngw    = true
@@ -97,7 +97,7 @@ module "networking" {
       ]
     }
     dcoppa_priv_rt_subnet2 = {
-      vpc_name = "dcoppa_vpc"
+      vpc_name = "dcoppa"
       routes = [{
         cidr_block = "0.0.0.0/0"
         use_ngw    = true
@@ -106,7 +106,7 @@ module "networking" {
       ]
     }
     dcoppa_priv_rt_subnet3 = {
-      vpc_name = "dcoppa_vpc"
+      vpc_name = "dcoppa"
       routes = [{
         cidr_block = "0.0.0.0/0"
         use_ngw    = true
@@ -167,7 +167,7 @@ module "eks" {
 
   for_each = module.networking.vpcs
 
-  cluster_name      = "dcoppa_eks"
+  cluster_name      = "${each.key}-eks"
   cluster_ip_family = "ipv4"
   cluster_version   = "1.31"
 
@@ -191,8 +191,8 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    dcoppa_eks_node_group = {
-      name         = "dcoppa_eks_node_group"
+    "${each.key}-ng" = {
+      name         = "${each.key}-ng"
       subnet_ids   = data.aws_subnets.dcoppa_priv_subnets[each.key].ids
       min_size     = 1
       max_size     = 1

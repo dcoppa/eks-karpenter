@@ -1,3 +1,7 @@
+locals {
+  cluster_name = "dcoppa-eks"
+}
+
 terraform {
   required_version = "~> 1.10.0"
 
@@ -42,21 +46,21 @@ provider "aws" {
 
 provider "helm" {
   kubernetes {
-    host                   = data.terraform_remote_state.cluster.outputs.eks_clusters["dcoppa_eks"].cluster_endpoint
-    cluster_ca_certificate = data.terraform_remote_state.cluster.outputs.eks_clusters["dcoppa_eks"].cluster_ca_certificate
-    token                  = data.aws_eks_cluster_auth.auth["dcoppa_eks"].token
+    host                   = data.terraform_remote_state.cluster.outputs.eks_clusters[local.cluster_name].cluster_endpoint
+    cluster_ca_certificate = data.terraform_remote_state.cluster.outputs.eks_clusters[local.cluster_name].cluster_ca_certificate
+    token                  = data.aws_eks_cluster_auth.auth[local.cluster_name].token
   }
 }
 
 provider "kubectl" {
-  host                   = data.terraform_remote_state.cluster.outputs.eks_clusters["dcoppa_eks"].cluster_endpoint
-  cluster_ca_certificate = data.terraform_remote_state.cluster.outputs.eks_clusters["dcoppa_eks"].cluster_ca_certificate
-  token                  = data.aws_eks_cluster_auth.auth["dcoppa_eks"].token
+  host                   = data.terraform_remote_state.cluster.outputs.eks_clusters[local.cluster_name].cluster_endpoint
+  cluster_ca_certificate = data.terraform_remote_state.cluster.outputs.eks_clusters[local.cluster_name].cluster_ca_certificate
+  token                  = data.aws_eks_cluster_auth.auth[local.cluster_name].token
   load_config_file       = false
 }
 
 provider "kubernetes" {
-  host                   = data.terraform_remote_state.cluster.outputs.eks_clusters["dcoppa_eks"].cluster_endpoint
-  cluster_ca_certificate = data.terraform_remote_state.cluster.outputs.eks_clusters["dcoppa_eks"].cluster_ca_certificate
-  token                  = data.aws_eks_cluster_auth.auth["dcoppa_eks"].token
+  host                   = data.terraform_remote_state.cluster.outputs.eks_clusters[local.cluster_name].cluster_endpoint
+  cluster_ca_certificate = data.terraform_remote_state.cluster.outputs.eks_clusters[local.cluster_name].cluster_ca_certificate
+  token                  = data.aws_eks_cluster_auth.auth[local.cluster_name].token
 }
