@@ -15,6 +15,7 @@ resource "aws_subnet" "this" {
   availability_zone       = each.value.availability_zone
   map_public_ip_on_launch = each.value.map_public_ip_on_launch
   tags = merge(each.value.tags, {
+    vpc-id : aws_vpc.this[each.value.vpc_name].id
     Name : each.key
   })
 }
@@ -23,6 +24,7 @@ resource "aws_internet_gateway" "this" {
   for_each = var.igw_parameters
   vpc_id   = aws_vpc.this[each.value.vpc_name].id
   tags = merge(each.value.tags, {
+    vpc-id : aws_vpc.this[each.value.vpc_name].id
     Name : each.key
   })
 }
@@ -31,6 +33,7 @@ resource "aws_route_table" "this" {
   for_each = var.rt_parameters
   vpc_id   = aws_vpc.this[each.value.vpc_name].id
   tags = merge(each.value.tags, {
+    vpc-id : aws_vpc.this[each.value.vpc_name].id
     Name : each.key
   })
 
