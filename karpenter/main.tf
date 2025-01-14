@@ -6,8 +6,15 @@ data "kubernetes_nodes" "static" {
   }
 }
 
+locals {
+  ready_static_nodes = [
+    for node in data.kubernetes_nodes.static.nodes : node.metadata[0].name
+    if length([for condition in node.status[0].conditions : condition if condition.type == "Ready" && condition.status == "True"]) > 0
+  ]
+}
+
 resource "kubernetes_annotations" "karpenter_do_not_disrupt" {
-  for_each = toset([for node in data.kubernetes_nodes.static.nodes : node.metadata[0].name])
+  for_each = toset(local.ready_static_nodes)
   annotations = {
     "karpenter.sh/do-not-disrupt" = "true"
   }
@@ -86,7 +93,7 @@ resource "kubectl_manifest" "karpenter_node_class" {
     spec:
       amiFamily: AL2023
       amiSelectorTerms:
-        - name: "amazon-eks-node-al2023-x86_64-standard-1.31-v*"
+        - name: "amazon-eks-node-al2023-x86_64-standard-${each.value.cluster_version}-*"
       role: ${module.karpenter[each.key].node_iam_role_name}
       securityGroupSelectorTerms:
         - tags:
@@ -94,7 +101,8 @@ resource "kubectl_manifest" "karpenter_node_class" {
             "Name": "${each.key}-node"
       subnetSelectorTerms:
         - tags:
-            "subnet-type": "priv"
+            "vpc-id": "${data.terraform_remote_state.cluster.outputs.vpcs[replace(each.key, "/-eks$/", "")].id}"
+            "subnet-type": "private"
   YAML
   depends_on = [helm_release.karpenter]
 }
@@ -127,7 +135,7 @@ resource "kubectl_manifest" "karpenter_node_pool" {
               values: ["t2"]
             - key: karpenter.k8s.aws/instance-size
               operator: In
-              values: ["small", "medium", "large", "xlarge", "2xlarge", "4xlarge", "8xlarge"]
+              values: ["small", "medium", "large", "xlarge", "2xlarge", "4xlarge", "8xlarge", "12xlarge", "16xlarge"]
             - key: kubernetes.io/arch
               operator: In
               values: ["amd64"]

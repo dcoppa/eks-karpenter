@@ -12,7 +12,7 @@ module "networking" {
       availability_zone       = "eu-central-1a"
       map_public_ip_on_launch = true
       tags = {
-        "subnet-type" = "pub"
+        "subnet-type" = "public"
       }
     }
     dcoppa_pub_subnet2 = {
@@ -21,7 +21,7 @@ module "networking" {
       availability_zone       = "eu-central-1b"
       map_public_ip_on_launch = true
       tags = {
-        "subnet-type" = "pub"
+        "subnet-type" = "public"
       }
     }
     dcoppa_pub_subnet3 = {
@@ -30,7 +30,7 @@ module "networking" {
       availability_zone       = "eu-central-1c"
       map_public_ip_on_launch = true
       tags = {
-        "subnet-type" = "pub"
+        "subnet-type" = "public"
       }
     }
     dcoppa_priv_subnet1 = {
@@ -38,7 +38,7 @@ module "networking" {
       vpc_name          = "dcoppa"
       availability_zone = "eu-central-1a"
       tags = {
-        "subnet-type" = "priv"
+        "subnet-type" = "private"
       }
     }
     dcoppa_priv_subnet2 = {
@@ -46,7 +46,7 @@ module "networking" {
       vpc_name          = "dcoppa"
       availability_zone = "eu-central-1b"
       tags = {
-        "subnet-type" = "priv"
+        "subnet-type" = "private"
       }
     }
     dcoppa_priv_subnet3 = {
@@ -54,7 +54,7 @@ module "networking" {
       vpc_name          = "dcoppa"
       availability_zone = "eu-central-1c"
       tags = {
-        "subnet-type" = "priv"
+        "subnet-type" = "private"
       }
     }
   }
@@ -149,7 +149,7 @@ resource "time_sleep" "this" {
 }
 
 data "aws_subnets" "dcoppa_priv_subnets" {
-  depends_on = [time_sleep.this]
+  depends_on = [module.networking, time_sleep.this]
   for_each   = module.networking.vpcs
   filter {
     name   = "vpc-id"
@@ -157,7 +157,7 @@ data "aws_subnets" "dcoppa_priv_subnets" {
   }
   filter {
     name   = "tag:subnet-type"
-    values = ["priv"]
+    values = ["private"]
   }
 }
 
