@@ -1,31 +1,3 @@
-data "kubernetes_nodes" "static" {
-  metadata {
-    labels = {
-      "static_node" = "true"
-    }
-  }
-}
-
-locals {
-  ready_static_nodes = [
-    for node in data.kubernetes_nodes.static.nodes : node.metadata[0].name
-    if length([for condition in node.status[0].conditions : condition if condition.type == "Ready" && condition.status == "True"]) > 0
-  ]
-}
-
-resource "kubernetes_annotations" "karpenter_do_not_disrupt" {
-  for_each = toset(local.ready_static_nodes)
-  annotations = {
-    "karpenter.sh/do-not-disrupt" = "true"
-  }
-  api_version = "v1"
-  force       = true
-  kind        = "Node"
-  metadata {
-    name = each.value
-  }
-}
-
 module "karpenter" {
   source  = "terraform-aws-modules/eks/aws//modules/karpenter"
   version = "20.31.6"
@@ -81,6 +53,7 @@ resource "helm_release" "karpenter" {
       effect: "NoSchedule"
     EOT
   ]
+  depends_on = [module.karpenter]
 }
 
 resource "kubectl_manifest" "karpenter_node_class" {
