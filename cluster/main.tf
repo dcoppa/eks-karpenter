@@ -12,7 +12,7 @@ module "networking" {
       availability_zone       = "eu-central-1a"
       map_public_ip_on_launch = true
       tags = {
-        "nettype" = "pub"
+        "subnet-type" = "pub"
       }
     }
     dcoppa_pub_subnet2 = {
@@ -21,7 +21,7 @@ module "networking" {
       availability_zone       = "eu-central-1b"
       map_public_ip_on_launch = true
       tags = {
-        "nettype" = "pub"
+        "subnet-type" = "pub"
       }
     }
     dcoppa_pub_subnet3 = {
@@ -30,7 +30,7 @@ module "networking" {
       availability_zone       = "eu-central-1c"
       map_public_ip_on_launch = true
       tags = {
-        "nettype" = "pub"
+        "subnet-type" = "pub"
       }
     }
     dcoppa_priv_subnet1 = {
@@ -38,7 +38,7 @@ module "networking" {
       vpc_name          = "dcoppa"
       availability_zone = "eu-central-1a"
       tags = {
-        "nettype" = "priv"
+        "subnet-type" = "priv"
       }
     }
     dcoppa_priv_subnet2 = {
@@ -46,7 +46,7 @@ module "networking" {
       vpc_name          = "dcoppa"
       availability_zone = "eu-central-1b"
       tags = {
-        "nettype" = "priv"
+        "subnet-type" = "priv"
       }
     }
     dcoppa_priv_subnet3 = {
@@ -54,7 +54,7 @@ module "networking" {
       vpc_name          = "dcoppa"
       availability_zone = "eu-central-1c"
       tags = {
-        "nettype" = "priv"
+        "subnet-type" = "priv"
       }
     }
   }
@@ -156,7 +156,7 @@ data "aws_subnets" "dcoppa_priv_subnets" {
     values = [each.value.id]
   }
   filter {
-    name   = "tag:nettype"
+    name   = "tag:subnet-type"
     values = ["priv"]
   }
 }

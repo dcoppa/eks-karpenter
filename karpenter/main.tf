@@ -94,7 +94,7 @@ resource "kubectl_manifest" "karpenter_node_class" {
             "Name": "${each.key}-node"
       subnetSelectorTerms:
         - tags:
-            "nettype": "priv"
+            "subnet-type": "priv"
   YAML
   depends_on = [helm_release.karpenter]
 }
