@@ -1,0 +1,2 @@
+#!/usr/bin/dash
+for N in $(/usr/bin/kubectl get nodepools -o name) ; do /usr/bin/kubectl patch ${N} --type json --patch '[{"op": "remove", "path": "/spec/limits/cpu"}]' ; done

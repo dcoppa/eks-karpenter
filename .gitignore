@@ -1,0 +1,4 @@
+cluster/.terraform/
+cluster/.terraform.*
+karpenter/.terraform/
+karpenter/.terraform.*
