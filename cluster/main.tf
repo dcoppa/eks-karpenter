@@ -148,7 +148,7 @@ resource "time_sleep" "this" {
   create_duration = "30s"
 }
 
-data "aws_subnets" "dcoppa_priv_subnets" {
+data "aws_subnets" "eks_priv_subnets" {
   depends_on = [module.networking, time_sleep.this]
   for_each   = module.networking.vpcs
   filter {
@@ -182,7 +182,7 @@ module "eks" {
   enable_cluster_creator_admin_permissions = true
 
   vpc_id     = each.value.id
-  subnet_ids = data.aws_subnets.dcoppa_priv_subnets[each.key].ids
+  subnet_ids = data.aws_subnets.eks_priv_subnets[each.key].ids
 
   eks_managed_node_group_defaults = {
     ami_type             = "AL2023_x86_64_STANDARD"
@@ -196,7 +196,7 @@ module "eks" {
   eks_managed_node_groups = {
     "${each.key}-ng" = {
       name         = "${each.key}-ng"
-      subnet_ids   = data.aws_subnets.dcoppa_priv_subnets[each.key].ids
+      subnet_ids   = data.aws_subnets.eks_priv_subnets[each.key].ids
       min_size     = 1
       max_size     = 1
       desired_size = 1
