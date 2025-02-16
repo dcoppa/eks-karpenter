@@ -243,7 +243,7 @@ module "eks" {
       addon_version = "v1.32.0-eksbuild.2"
     }
     vpc-cni = {
-      addon_version = "v1.19.2-eksbuild.1"
+      addon_version = "v1.19.2-eksbuild.5"
     }
   }
 }
