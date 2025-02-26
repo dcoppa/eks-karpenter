@@ -216,7 +216,7 @@ resource "kubernetes_cron_job_v1" "costsaver" {
               "static_node" = "true"
             }
             security_context {
-              fs_group        = "0"
+              fs_group        = "65532"
               run_as_group    = "65532"
               run_as_non_root = "true"
               run_as_user     = "65532"
