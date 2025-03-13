@@ -19,7 +19,7 @@ resource "helm_release" "karpenter" {
   name             = "karpenter"
   repository       = "oci://public.ecr.aws/karpenter"
   chart            = "karpenter"
-  version          = "1.1.3"
+  version          = "1.1.4"
   namespace        = "karpenter"
   create_namespace = true
   force_update     = true
@@ -147,6 +147,11 @@ resource "kubernetes_cluster_role" "costsaver" {
     api_groups = ["apps"]
     resources  = ["daemonsets"]
     verbs      = ["get", "list"]
+  }
+  rule {
+    api_groups = ["karpenter.sh"]
+    resources  = ["nodeclaims"]
+    verbs      = ["get", "list", "delete", "watch"]
   }
   rule {
     api_groups = ["karpenter.sh"]
